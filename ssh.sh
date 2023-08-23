@@ -9,23 +9,19 @@ fi
 # 随机生成2000-65535之间的端口
 NEW_PORT=$((RANDOM % (65535 - 2000 + 1) + 2000))
 
-# 更改SSH配置文件中的端口
+# 如果sudo存在，则使用sudo，否则直接运行命令
+CMD_PREFIX=""
 if command -v sudo &> /dev/null; then
-    sudo sed -i "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
-    sudo systemctl restart sshd
+    CMD_PREFIX="sudo "
+fi
 
-    # 如果ufw防火墙已经安装和运行，更新规则
-    if sudo ufw status | grep -q "active"; then
-        sudo ufw allow $NEW_PORT/tcp
-    fi
-else
-    sed -i "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
-    systemctl restart sshd
+# 更改SSH配置文件中的端口
+${CMD_PREFIX}sed -i "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
+${CMD_PREFIX}systemctl restart sshd
 
-    # 如果ufw防火墙已经安装和运行，更新规则
-    if ufw status | grep -q "active"; then
-        ufw allow $NEW_PORT/tcp
-    fi
+# 如果ufw防火墙已经安装和运行，更新规则
+if ${CMD_PREFIX}ufw status | grep -q "active"; then
+    ${CMD_PREFIX}ufw allow $NEW_PORT/tcp
 fi
 
 # 提示用户新的端口号
