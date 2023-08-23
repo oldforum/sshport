@@ -20,8 +20,10 @@ ${CMD_PREFIX}sed -i "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
 ${CMD_PREFIX}systemctl restart sshd
 
 # 如果ufw防火墙已经安装和运行，更新规则
-if ${CMD_PREFIX}ufw status | grep -q "active"; then
-    ${CMD_PREFIX}ufw allow $NEW_PORT/tcp
+if command -v ufw &> /dev/null; then
+    if ${CMD_PREFIX}ufw status | grep -q "active"; then
+        ${CMD_PREFIX}ufw allow $NEW_PORT/tcp
+    fi
 fi
 
 # 提示用户新的端口号
