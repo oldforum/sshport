@@ -16,7 +16,7 @@ if command -v sudo &> /dev/null; then
 fi
 
 # 更改SSH配置文件中的端口
-${CMD_PREFIX}sed -i "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
+${CMD_PREFIX}sed -i.bak "s/^Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
 ${CMD_PREFIX}systemctl restart sshd
 
 # 如果ufw防火墙已经安装和运行，更新规则
