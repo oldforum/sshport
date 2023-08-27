@@ -6,6 +6,9 @@ if ! command -v sudo &> /dev/null && [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# 获取当前SSH端口
+CURRENT_PORT=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+
 # 随机生成2000-65535之间的端口
 NEW_PORT=$((RANDOM % (65535 - 2000 + 1) + 2000))
 
@@ -19,6 +22,9 @@ fi
 ${CMD_PREFIX}sed -i "s/^\(#[ ]*\)\?Port .*/Port $NEW_PORT/" /etc/ssh/sshd_config
 ${CMD_PREFIX}systemctl restart sshd
 
+# 获取更改后的SSH端口
+ACTUAL_NEW_PORT=$(grep "^Port" /etc/ssh/sshd_config | awk '{print $2}')
+
 # 如果ufw防火墙已经安装和运行，更新规则
 if command -v ufw &> /dev/null; then
     if ${CMD_PREFIX}ufw status | grep -q "active"; then
@@ -26,5 +32,5 @@ if command -v ufw &> /dev/null; then
     fi
 fi
 
-# 提示用户新的端口号
-echo "SSH端口已更改为$NEW_PORT，请使用此端口进行连接。"
+# 提示用户旧的端口和新的端口号
+echo "原SSH端口为$CURRENT_PORT，现已更改为$ACTUAL_NEW_PORT，请使用此端口进行连接。"
