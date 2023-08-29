@@ -1,15 +1,12 @@
 #!/bin/bash
 
 # IP地址数组
-ips=(8.8.8.8 4.4.4.4 1.1.1.1) 
+ips=(8.8.8.8 4.4.4.4 1.1.1.1)
 
 for ip in ${ips[@]}
 do
-  ping -c 3 $ip &> /dev/null
+  ping_resp=$(ping -c 3 $ip | tail -1)
+  ping_time=$(echo $ping_resp | cut -d '/' -f 5 | cut -d '.' -f 1)
   
-  if [ $? -eq 0 ]; then
-    echo "$ip is up"
-  else
-    echo "$ip is down"
-  fi  
+  echo "Google DNS: $ip, Delay: $ping_time ms"
 done
