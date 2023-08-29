@@ -1,20 +1,31 @@
 #!/bin/bash
 
-# 声明一个关联数组来存储IP地址和备注
-declare -A ip_addresses
-ip_addresses=( ["192.168.1.1"]="Router" ["8.8.8.8"]="Google DNS" ["www.google.com"]="Google")
+# IP地址和备注列表（每个条目格式为：备注,IP地址）
+ip_remarks=(
+    "AK.HKLite,91.229.133.25"
+    "AK.KRBGP,185.214.103.178"
+    "AK.JPPRO,103.232.213.62"
+    "AK.JPLite,181.214.136.81"
+    "AK.SGLite,85.237.68.236"
+    "AK.LAXUS3,108.165.254.235"
+    "AK.FRNAT,51.158.62.251"
+    # 添加更多备注和IP地址
+)
 
-# 循环遍历关联数组中的IP地址和备注
-for ip in "${!ip_addresses[@]}"; do
-    remark="${ip_addresses[$ip]}"
-    
+# 循环遍历IP地址和备注列表
+for entry in "${ip_remarks[@]}"; do
+    # 将条目按逗号分隔为备注和IP地址
+    IFS=',' read -ra parts <<< "$entry"
+    remark="${parts[0]}"
+    ip="${parts[1]}"
+
     # 使用ping命令发送4个ICMP回显请求包，等待1秒，并将结果存储到变量output中
     output=$(ping -c 4 -W 1 "$ip")
 
     # 从ping命令的输出中提取平均延迟时间（ms）
     avg_delay=$(echo "$output" | grep -oP 'time=\K\d+' | awk '{sum+=$1} END {if(NR>0) print sum/NR; else print 0}')
 
-    # 打印结果，包括IP地址、备注和平均延迟
+    # 打印结果，包括备注、IP地址和平均延迟
     echo "备注: $remark"
     echo "IP地址: $ip"
     echo "平均延迟: ${avg_delay}ms"
