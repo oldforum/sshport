@@ -37,7 +37,10 @@ for entry in "${ip_remarks[@]}"; do
 
     # 从ping命令的输出中提取平均延迟时间（ms）
     avg_delay=$(echo "$output" | grep -oP 'time=\K\d+' | awk '{sum+=$1} END {if(NR>0) print sum/NR; else print 0}')
+    
+    # 格式化延迟，保持对齐
+    formatted_delay=$(printf "%-6s ms" "${avg_delay}")
 
     # 打印结果，包括节点名称和平均延迟
-    printf "%-${max_width}s %-10s\n" "$node_name" "${avg_delay} ms"
+    printf "%-${max_width}s %-10s\n" "$node_name" "$formatted_delay"
 done
