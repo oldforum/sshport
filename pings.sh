@@ -14,7 +14,6 @@ ip_remarks=(
 
 # 打印表头
 printf "%-20s %-10s\n" "节点名称" "延迟"
-echo "=============================="
 
 # 循环遍历IP地址和备注列表
 for entry in "${ip_remarks[@]}"; do
