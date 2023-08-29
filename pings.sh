@@ -12,12 +12,22 @@ ip_remarks=(
     # 添加更多节点名称和IP地址
 )
 
+# 计算对齐所需的宽度
+max_width=0
+for entry in "${ip_remarks[@]}"; do
+    IFS=',' read -ra parts <<< "$entry"
+    node_name="${parts[0]}"
+    if [ ${#node_name} -gt $max_width ]; then
+        max_width=${#node_name}
+    fi
+done
+
 # 打印表头
-printf "%-20s %-10s\n" "节点名称" "延迟"
+printf "%-${max_width}s %-10s\n" "节点名称" "延迟"
+echo "=============================="
 
 # 循环遍历IP地址和备注列表
 for entry in "${ip_remarks[@]}"; do
-    # 将条目按逗号分隔为节点名称和IP地址
     IFS=',' read -ra parts <<< "$entry"
     node_name="${parts[0]}"
     ip="${parts[1]}"
@@ -29,5 +39,5 @@ for entry in "${ip_remarks[@]}"; do
     avg_delay=$(echo "$output" | grep -oP 'time=\K\d+' | awk '{sum+=$1} END {if(NR>0) print sum/NR; else print 0}')
 
     # 打印结果，包括节点名称和平均延迟
-    printf "%-20s %-10s\n" "$node_name" "${avg_delay} ms"
+    printf "%-${max_width}s %-10s\n" "$node_name" "${avg_delay} ms"
 done
