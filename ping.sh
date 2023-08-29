@@ -1,12 +1,18 @@
 #!/bin/bash
 
-# IP地址数组
-ips=(8.8.8.8 4.4.4.4 1.1.1.1)
+ips=(
+  "91.229.133.25"
+  "85.237.68.236"
+)
 
 for ip in ${ips[@]}
 do
   ping_resp=$(ping -c 3 $ip | tail -1)
   ping_time=$(echo $ping_resp | cut -d '/' -f 5 | cut -d '.' -f 1)
-  
-  echo "Google DNS: $ip, Delay: $ping_time ms"
+
+  if [[ $ip == "91.229.133.25" ]]; then
+    echo "AK.HKLite, IP: $ip, Delay: $ping_time ms"  
+  elif [[ $ip == "85.237.68.236" ]]; then
+    echo "AK.SGLite, IP: $ip, Delay: $ping_time ms"
+  fi
 done
